@@ -1,0 +1,19 @@
+{
+  "objective": "binary",
+  "metric": "custom",
+  "boosting_type": "gbdt",
+  "verbosity": -1,
+  "is_unbalance": false,
+  "num_leaves": 88,
+  "max_depth": 10,
+  "learning_rate": 0.11265770241195591,
+  "feature_fraction": 0.7367663185416977,
+  "bagging_fraction": 0.8625803079727365,
+  "bagging_freq": 4,
+  "min_child_samples": 166,
+  "reg_alpha": 7.04480806377519e-05,
+  "reg_lambda": 1.6934490731313353e-08,
+  "scale_pos_weight": 18.899789733631117,
+  "seed": 42,
+  "n_jobs": -1
+}

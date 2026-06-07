@@ -1,0 +1,136 @@
+{
+  "evaluation_metadata": {
+    "test_rows": 118108,
+    "test_fraud_n": 4064,
+    "test_fraud_rate_pct": 3.4409,
+    "elapsed_s": 16.9
+  },
+  "models": {
+    "lgbm": {
+      "model": "LightGBM",
+      "pr_auc": 0.461803,
+      "roc_auc": 0.869896,
+      "gini": 0.739793,
+      "ks_statistic": 0.584532,
+      "brier_score": 0.041136,
+      "ece": 0.080406,
+      "precision_at_50": 0.3537,
+      "recall_at_50": 0.4934,
+      "f1_at_50": 0.412,
+      "optimal_threshold": 0.7531,
+      "f1_at_optimal": 0.4569,
+      "precision_at_optimal": 0.6259,
+      "recall_at_optimal": 0.3597
+    },
+    "bayes": {
+      "model": "Bayesian LR",
+      "pr_auc": 0.089533,
+      "roc_auc": 0.717563,
+      "gini": 0.435125,
+      "ks_statistic": 0.360137,
+      "brier_score": 0.034628,
+      "ece": 0.008391,
+      "precision_at_50": 0.0,
+      "recall_at_50": 0.0,
+      "f1_at_50": 0.0,
+      "optimal_threshold": 0.0841,
+      "f1_at_optimal": 0.1893,
+      "precision_at_optimal": 0.122,
+      "recall_at_optimal": 0.4225
+    }
+  },
+  "uncertainty_analysis": {
+    "mean_uncertainty_all": 0.016304,
+    "mean_uncertainty_fraud": 0.025644,
+    "mean_uncertainty_legit": 0.015971,
+    "uncertainty_ratio": 1.6057,
+    "pct_high_uncertainty_q75": 25.0,
+    "bayes_std_mean_fraud": 0.006839,
+    "bayes_std_mean_legit": 0.004364
+  },
+  "fn_recovery": {
+    "summary": {
+      "lgbm_optimal_threshold": 0.7531,
+      "total_lgbm_false_negatives": 2602,
+      "fn_miss_rate_pct": 64.03,
+      "headline_operating_point": "p75 uncertainty",
+      "headline_queue_size_pct": 25.0,
+      "headline_fn_recovery_pct": 41.12,
+      "headline_queue_precision_pct": 8.25
+    },
+    "table": [
+      {
+        "uncertainty_percentile": 0.5,
+        "hdi_width_threshold": 0.006962,
+        "review_queue_size": 59054,
+        "review_queue_pct_all": 50.0,
+        "fn_caught_in_queue": 1663,
+        "fn_recovery_pct": 63.91,
+        "fraud_in_queue": 3102,
+        "queue_precision_pct": 5.25
+      },
+      {
+        "uncertainty_percentile": 0.6,
+        "hdi_width_threshold": 0.00807,
+        "review_queue_size": 47243,
+        "review_queue_pct_all": 40.0,
+        "fn_caught_in_queue": 1438,
+        "fn_recovery_pct": 55.27,
+        "fraud_in_queue": 2853,
+        "queue_precision_pct": 6.04
+      },
+      {
+        "uncertainty_percentile": 0.7,
+        "hdi_width_threshold": 0.010195,
+        "review_queue_size": 35433,
+        "review_queue_pct_all": 30.0,
+        "fn_caught_in_queue": 1188,
+        "fn_recovery_pct": 45.66,
+        "fraud_in_queue": 2581,
+        "queue_precision_pct": 7.28
+      },
+      {
+        "uncertainty_percentile": 0.75,
+        "hdi_width_threshold": 0.013053,
+        "review_queue_size": 29527,
+        "review_queue_pct_all": 25.0,
+        "fn_caught_in_queue": 1070,
+        "fn_recovery_pct": 41.12,
+        "fraud_in_queue": 2437,
+        "queue_precision_pct": 8.25
+      },
+      {
+        "uncertainty_percentile": 0.8,
+        "hdi_width_threshold": 0.018493,
+        "review_queue_size": 23622,
+        "review_queue_pct_all": 20.0,
+        "fn_caught_in_queue": 880,
+        "fn_recovery_pct": 33.82,
+        "fraud_in_queue": 2196,
+        "queue_precision_pct": 9.3
+      },
+      {
+        "uncertainty_percentile": 0.9,
+        "hdi_width_threshold": 0.034569,
+        "review_queue_size": 11811,
+        "review_queue_pct_all": 10.0,
+        "fn_caught_in_queue": 438,
+        "fn_recovery_pct": 16.83,
+        "fraud_in_queue": 1294,
+        "queue_precision_pct": 10.96
+      }
+    ]
+  },
+  "disagreement_analysis": {
+    "disagreement_threshold": 0.2,
+    "n_disagreements": 15785,
+    "disagreement_rate_pct": 13.36,
+    "lgbm_accuracy_in_disagree": 0.7216,
+    "bayes_accuracy_in_disagree": 0.7999,
+    "winner_in_disagreements": "Bayesian",
+    "lgbm_high_bayes_low_count": 4052,
+    "bayes_high_lgbm_low_count": 391,
+    "fraud_rate_lgbm_hi_bayes_lo": 0.4413,
+    "fraud_rate_bayes_hi_lgbm_lo": 0.0
+  }
+}

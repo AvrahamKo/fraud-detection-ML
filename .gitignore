@@ -1,0 +1,18 @@
+# Data directories (Never upload massive data files)
+data/
+# Model checkpoints and large trace binaries
+models/**/*.txt
+models/**/*.pkl
+models/**/*.pkl.json
+models/**/*.nc
+models/**/*.npy
+# Python environment & cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,49 @@
+{
+  "model_name": "bayes_lr_fraud",
+  "feature_names": [
+    "vel_card1_1h_count",
+    "vel_card1_24h_count",
+    "vel_card1_7d_count",
+    "vel_card1_1h_sum",
+    "vel_addr1_24h_count",
+    "log1p_amt",
+    "amt_to_card1_mean_ratio",
+    "amt_zscore_card1",
+    "hour_of_day",
+    "is_night",
+    "is_weekend",
+    "email_match",
+    "has_identity",
+    "card1_addr1_is_mode",
+    "identity_completeness"
+  ],
+  "config": {
+    "n_sample_max": 50000,
+    "min_fraud_in_sample": 2000,
+    "n_advi_iterations": 30000,
+    "n_posterior_samples": 2000,
+    "n_prediction_samples": 500,
+    "prior_beta_sigma": 1.0,
+    "prior_alpha_sigma": 2.0,
+    "random_seed": 42,
+    "model_name": "bayes_lr_fraud"
+  },
+  "config_features": [
+    "vel_card1_1h_count",
+    "vel_card1_24h_count",
+    "vel_card1_7d_count",
+    "vel_card1_1h_sum",
+    "vel_addr1_24h_count",
+    "log1p_amt",
+    "amt_to_card1_mean_ratio",
+    "amt_zscore_card1",
+    "hour_of_day",
+    "is_night",
+    "is_weekend",
+    "email_match",
+    "has_identity",
+    "card1_addr1_is_mode",
+    "identity_completeness"
+  ],
+  "n_training_features": 15
+}
