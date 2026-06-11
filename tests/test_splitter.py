@@ -90,9 +90,10 @@ def test_no_overlap_raises_when_val_starts_before_train_ends():
     df = _make_df(150)
     train, val, test = time_aware_split(df)
 
-    # Artificially inject overlap: prepend a train row into val
-    overlap_row = train.iloc[[-1]].copy()  # last train row
-    val_bad = pd.concat([overlap_row, val], ignore_index=True)
+    # Use a row from the MIDDLE of train so val_bad.min() < train.max()
+    # (using the last row would give val.min == train.max — boundary tie, not overlap)
+    mid_row = train.iloc[[len(train) // 2]].copy()
+    val_bad = pd.concat([mid_row, val], ignore_index=True)
     val_bad = val_bad.sort_values("TransactionDT").reset_index(drop=True)
 
     with pytest.raises(ValueError, match="Temporal overlap between train and val"):
@@ -103,8 +104,8 @@ def test_no_overlap_raises_when_test_starts_before_val_ends():
     df = _make_df(150)
     train, val, test = time_aware_split(df)
 
-    overlap_row = val.iloc[[-1]].copy()
-    test_bad = pd.concat([overlap_row, test], ignore_index=True)
+    mid_row = val.iloc[[len(val) // 2]].copy()
+    test_bad = pd.concat([mid_row, test], ignore_index=True)
     test_bad = test_bad.sort_values("TransactionDT").reset_index(drop=True)
 
     with pytest.raises(ValueError, match="Temporal overlap between val and test"):
