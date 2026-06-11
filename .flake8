@@ -1,0 +1,22 @@
+[flake8]
+max-line-length = 120
+# Ignore alignment/style choices that are intentional in ML code
+ignore =
+    E203,  # whitespace before ':'
+    E221,  # multiple spaces before operator (column alignment)
+    E225,  # missing whitespace around operator
+    E226,  # missing whitespace around arithmetic operator
+    E231,  # missing whitespace after ','
+    E241,  # multiple spaces after ','  (column alignment)
+    E251,  # spaces around keyword / parameter equals
+    E272,  # multiple spaces before keyword
+    E131,  # continuation line unaligned
+    E702,  # multiple statements on one line (semicolon)
+    W503,  # line break before binary operator
+    W504,  # line break after binary operator
+    E501,  # line too long (covered by max-line-length)
+    F841   # local variable assigned but never used
+per-file-ignores =
+    # Unused imports in type annotations are fine in older Python
+    src/*:F401
+    tests/*:F401
