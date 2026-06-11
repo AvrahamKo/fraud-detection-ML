@@ -101,7 +101,7 @@ def compute_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
 
     out = df.copy()
     out["hour_of_day"]   = ((dt // _SECS_PER_HOUR) % 24).astype(np.int8)
-    out["day_of_week"]   = ((dt // _SECS_PER_DAY)  %  7).astype(np.int8)
+    out["day_of_week"]   = ((dt // _SECS_PER_DAY) % 7).astype(np.int8)
     out["day_of_dataset"] = (dt  // _SECS_PER_DAY).astype(np.int16)
 
     # Boolean flags (stored as int8 to save memory and work cleanly with trees)

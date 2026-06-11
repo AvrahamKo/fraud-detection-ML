@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
-ignore = E203,E221,E225,E226,E231,E241,E251,E272,E131,E702,W503,W504,E501,F841
+ignore = E203,E221,E222,E225,E226,E231,E241,E251,E272,E131,E702,W503,W504,E501,F841
 per-file-ignores =
     src/*:F401
     tests/*:F401
