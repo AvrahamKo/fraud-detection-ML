@@ -71,7 +71,7 @@ import time
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import arviz as az
 import numpy as np
@@ -224,7 +224,6 @@ def prepare_bayesian_features(
     logger.info("Bayesian prep: using %d features.", len(available))
 
     # ── Target ────────────────────────────────────────────────────────────
-    y = None
     if label_col in df.columns:
         y_series = df[label_col]
     else:
@@ -427,7 +426,7 @@ class BayesianFraudModel:
         cfg = self.config
 
         logger.info("Building PyMC model …")
-        with pm.Model() as pymc_model:
+        with pm.Model():
             # ── Priors ────────────────────────────────────────────────────
             alpha = pm.Normal(
                 "alpha",
@@ -446,7 +445,7 @@ class BayesianFraudModel:
             # ── Likelihood ────────────────────────────────────────────────
             # Using logit_p= is numerically stable and avoids computing
             # sigmoid inside the graph (saves a graph node)
-            obs = pm.Bernoulli("obs", logit_p=logit_p, observed=y)
+            pm.Bernoulli("obs", logit_p=logit_p, observed=y)
 
             # ── ADVI ──────────────────────────────────────────────────────
             logger.info(

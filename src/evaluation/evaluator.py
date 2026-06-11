@@ -54,8 +54,7 @@ from __future__ import annotations
 import json
 import logging
 import time
-import warnings
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -376,7 +375,6 @@ class FraudEvaluator:
 
         # Pretty-print comparison table
         keys = [k for k in lgbm_metrics if k != "model"]
-        col_w = 30
         logger.info("")
         logger.info("=" * 68)
         logger.info("%-30s  %-16s  %-16s", "Metric", "LightGBM", "Bayesian LR")
@@ -550,8 +548,6 @@ class FraudEvaluator:
         lg   = self._lgbm_proba[idx]
         bm   = self._bayes_mean[idx]
         unc  = hdi_width[idx]
-        true = self._y_true[idx]
-
         fig, ax = plt.subplots(figsize=(9, 8))
 
         sc = ax.scatter(
