@@ -15,14 +15,14 @@ from src.features.velocity import compute_velocity_features, _rolling_entity_win
 # ---------------------------------------------------------------------------
 
 def _make_df(categorical: bool = False) -> pd.DataFrame:
+    card1 = pd.Categorical(["A", "A", "A", "B", "B"]) if categorical else ["A", "A", "A", "B", "B"]
     df = pd.DataFrame({
-        "TransactionID":  [1, 2, 3, 4, 5],
-        "TransactionDT":  [0, 1800, 3700, 90_000, 90_100],   # seconds
+        "TransactionID": [1, 2, 3, 4, 5],
+        "TransactionDT": [0, 1800, 3700, 90_000, 90_100],
         "TransactionAmt": [100.0, 200.0, 50.0, 300.0, 75.0],
-        "card1": pd.Categorical(["A", "A", "A", "B", "B"])
-            if categorical else ["A", "A", "A", "B", "B"],
-        "addr1":          ["X", "X", "Y", "X", "Y"],
-        "P_emaildomain":  ["g.com", "g.com", "y.com", "g.com", "y.com"],
+        "card1": card1,
+        "addr1": ["X", "X", "Y", "X", "Y"],
+        "P_emaildomain": ["g.com", "g.com", "y.com", "g.com", "y.com"],
     })
     return df
 
@@ -35,7 +35,7 @@ def test_expected_columns_created():
     df = _make_df()
     out = compute_velocity_features(df, entity_cols=["card1"], windows={"1h": 3600})
     assert "vel_card1_1h_count" in out.columns
-    assert "vel_card1_1h_sum"   in out.columns
+    assert "vel_card1_1h_sum" in out.columns
     assert "vel_card1_1h_mean_amt" in out.columns
 
 
