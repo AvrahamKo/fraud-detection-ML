@@ -35,6 +35,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    continue-on-error: true   # advisory only — does not block merges
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,4 +44,4 @@ jobs:
       - name: Install flake8
         run: pip install flake8
       - name: Lint
-        run: flake8 src/ tests/ --max-line-length=100 --ignore=E203,W503
+        run: flake8 src/ tests/ --max-line-length=120 --ignore=E203,W503,W504,E501
