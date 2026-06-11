@@ -55,7 +55,7 @@ replacement: swap the implementation, keep the column names.
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Sequence
 
 import numpy as np
 import pandas as pd

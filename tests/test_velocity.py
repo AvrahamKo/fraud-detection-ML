@@ -5,9 +5,8 @@ Unit tests for src/features/velocity.py
 """
 import numpy as np
 import pandas as pd
-import pytest
 
-from src.features.velocity import compute_velocity_features, _rolling_entity_window
+from src.features.velocity import compute_velocity_features
 
 
 # ---------------------------------------------------------------------------
