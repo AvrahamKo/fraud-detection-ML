@@ -121,7 +121,7 @@ This section quantifies the operational ROI of the hybrid system — the argumen
 
 ### The Problem
 
-At its optimal operating threshold, **LightGBM missed 2,602 fraud transactions** — a **64.0% miss rate** on the test set's 4,065 fraud cases. These are chargebacks waiting to happen. At an average e-commerce order value of ~$100 and a chargeback penalty multiplier of ~1.5×, each missed fraud costs the merchant ~$150. The 2,602 missed frauds represent a **~$390,000 exposure in a single time window**.
+At its optimal operating threshold, **LightGBM missed 2,602 fraud transactions** — a **64.0% miss rate** on the test set's 4,064 fraud cases. These are chargebacks waiting to happen. At an average e-commerce order value of ~$100 and a chargeback penalty multiplier of ~1.5×, each missed fraud costs the merchant ~$150. The 2,602 missed frauds represent a **~$390,000 exposure in a single time window**.
 
 ### The Bayesian Uncertainty Signal
 
@@ -180,11 +180,7 @@ fraud-detection-ML/
 │       └── meta.json
 │
 ├── notebooks/
-│   ├── 01_eda.ipynb                # EDA: imbalance, missingness, temporal
-│   ├── 02_feature_exploration.ipynb
-│   ├── 03_traditional_model.ipynb
-│   ├── 04_bayesian_model.ipynb
-│   └── 05_comparison_and_report.ipynb
+│   └── 01_eda.ipynb                # EDA: imbalance, missingness, temporal
 │
 ├── src/
 │   ├── ingestion/
@@ -207,12 +203,14 @@ fraud-detection-ML/
 │   ├── figures/                    # All generated PNGs
 │   └── model_comparison_metrics.json
 │
-├── configs/
-│   ├── features.yaml
-│   ├── lgbm.yaml
-│   └── bayesian.yaml
-│
 ├── tests/
+│   ├── test_splitter.py
+│   ├── test_behavioral.py
+│   └── test_velocity.py
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── pyproject.toml
 ├── requirements.txt
 └── README.md
 ```
@@ -224,9 +222,10 @@ fraud-detection-ML/
 ### 0 · Environment Setup
 
 ```bash
-git clone https://github.com/<your-handle>/fraud-detection-ML.git
+git clone https://github.com/AvrahamKo/fraud-detection-ML.git
 cd fraud-detection-ML
 pip install -r requirements.txt
+pip install -e .   # installs the src/ package so imports work without sys.path hacks
 ```
 
 Place the IEEE-CIS Kaggle files into `data/raw/`:

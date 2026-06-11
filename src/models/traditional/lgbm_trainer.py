@@ -128,10 +128,48 @@ class TrainerConfig:
 # Feature preparation
 # ---------------------------------------------------------------------------
 
+def fit_label_encoders(
+    train_df: pd.DataFrame,
+    label_col: str = "isFraud",
+    drop_cols: Optional[List[str]] = None,
+) -> Dict[str, LabelEncoder]:
+    """
+    Fit a LabelEncoder for every object-dtype feature column in ``train_df``.
+
+    Call once on the training split and pass the returned dict to
+    ``prepare_features(..., label_encoders=encoders)`` for val and test.
+    This guarantees that every split uses identical integer→category mappings.
+
+    Parameters
+    ----------
+    train_df : pd.DataFrame
+    label_col : str
+    drop_cols : list of str, optional
+
+    Returns
+    -------
+    dict
+        ``{column_name: fitted_LabelEncoder}``
+    """
+    exclude      = set(_EXCLUDED_COLS + (drop_cols or []))
+    feature_cols = [c for c in train_df.columns if c not in exclude and c != label_col]
+    encoders: Dict[str, LabelEncoder] = {}
+
+    for col in feature_cols:
+        if train_df[col].dtype == object:
+            le = LabelEncoder()
+            le.fit(train_df[col].astype(str))
+            encoders[col] = le
+            logger.info("LabelEncoder fitted for '%s': %d classes.", col, len(le.classes_))
+
+    return encoders
+
+
 def prepare_features(
     df: pd.DataFrame,
     label_col: str = "isFraud",
     drop_cols: Optional[List[str]] = None,
+    label_encoders: Optional[Dict[str, LabelEncoder]] = None,
 ) -> Tuple[pd.DataFrame, pd.Series, List[str]]:
     """
     Separate and coerce features for LightGBM.
@@ -139,9 +177,11 @@ def prepare_features(
     Steps
     -----
     1. Drop identifier / target / explicitly excluded columns.
-    2. Object-dtype columns (e.g. ``p_email_tld``) are label-encoded to
-       int so LightGBM can treat them as categoricals natively.
-    3. Return the feature matrix ``X``, target ``y``, and the list of
+    2. Pandas ``category`` columns → integer codes (LightGBM native handling).
+    3. Object-dtype columns → label-encoded integers using ``label_encoders``
+       fitted on the training split.  Unseen values at inference time are
+       mapped to a dedicated ``<unknown>`` class (index 0).
+    4. Return the feature matrix ``X``, target ``y``, and the list of
        categorical feature column names.
 
     Parameters
@@ -152,6 +192,11 @@ def prepare_features(
         Target column name.
     drop_cols : list of str, optional
         Additional columns to exclude.
+    label_encoders : dict, optional
+        Output of ``fit_label_encoders(train_df)``.  When provided, object
+        columns are transformed (not re-fitted), ensuring consistent integer
+        codes across train / val / test.  When None, encoders are fitted on
+        ``df`` directly — correct only for the training split.
 
     Returns
     -------
@@ -181,10 +226,26 @@ def prepare_features(
             cat_cols.append(col)
 
         elif X[col].dtype == object:
-            # Remaining string columns (e.g. email TLD strings from identity module)
-            le = LabelEncoder()
-            X[col] = le.fit_transform(X[col].astype(str)).astype(np.int16)
             cat_cols.append(col)
+            if label_encoders is not None and col in label_encoders:
+                le = label_encoders[col]
+                # Map unseen values to the first class index (safe fallback).
+                known = set(le.classes_)
+                X[col] = (
+                    X[col].astype(str)
+                         .map(lambda v: v if v in known else le.classes_[0])
+                )
+                X[col] = le.transform(X[col]).astype(np.int16)
+            else:
+                # Training path (or no encoders provided): fit in place.
+                if label_encoders is not None:
+                    logger.warning(
+                        "prepare_features: no encoder for '%s' — fitting on "
+                        "current split.  Pass fit_label_encoders() output to "
+                        "avoid category ID drift on val/test.", col
+                    )
+                le = LabelEncoder()
+                X[col] = le.fit_transform(X[col].astype(str)).astype(np.int16)
 
     logger.info(
         "prepare_features: %d total features  |  %d categorical  |  fraud rate: %.4f%%",
@@ -970,9 +1031,12 @@ if __name__ == "__main__":
         train_f, val_f, test_f = pipe.fit_transform_splits(train_r, val_r, test_r)
 
     # ── Prepare feature matrices ──────────────────────────────────────────
-    X_train, y_train, cat_cols = prepare_features(train_f)
-    X_val,   y_val,   _        = prepare_features(val_f)
-    X_test,  y_test,  _        = prepare_features(test_f)
+    # Fit label encoders on train only, then apply to val/test — prevents
+    # category ID remapping across splits (data leakage / inconsistency).
+    le_encoders             = fit_label_encoders(train_f)
+    X_train, y_train, cat_cols = prepare_features(train_f, label_encoders=le_encoders)
+    X_val,   y_val,   _        = prepare_features(val_f,   label_encoders=le_encoders)
+    X_test,  y_test,  _        = prepare_features(test_f,  label_encoders=le_encoders)
 
     logger.info(
         "Feature matrix: train=%s  val=%s  test=%s  cat_features=%d",

@@ -1,0 +1,22 @@
+# Core data
+pandas>=1.5,<3.0
+numpy>=1.23
+pyarrow>=10.0
+
+# Machine learning
+lightgbm>=3.3
+optuna>=3.0
+scikit-learn>=1.1
+shap>=0.41
+
+# Bayesian inference
+pymc>=5.0
+arviz>=0.15
+scipy>=1.9
+
+# Visualisation
+matplotlib>=3.6
+seaborn>=0.12
+
+# Utilities
+pypdf>=3.0

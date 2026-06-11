@@ -70,12 +70,15 @@ class SplitConfig:
     label_col  : str   = "isFraud"
 
     def __post_init__(self) -> None:
-        assert 0 < self.train_frac < 1, "train_frac must be in (0, 1)"
-        assert 0 < self.val_frac   < 1, "val_frac must be in (0, 1)"
-        assert self.train_frac + self.val_frac < 1.0, (
-            f"train_frac ({self.train_frac}) + val_frac ({self.val_frac}) "
-            f"must be < 1.0 to leave room for the test set."
-        )
+        if not (0 < self.train_frac < 1):
+            raise ValueError("train_frac must be in (0, 1)")
+        if not (0 < self.val_frac < 1):
+            raise ValueError("val_frac must be in (0, 1)")
+        if self.train_frac + self.val_frac >= 1.0:
+            raise ValueError(
+                f"train_frac ({self.train_frac}) + val_frac ({self.val_frac}) "
+                f"must be < 1.0 to leave room for the test set."
+            )
 
     @property
     def test_frac(self) -> float:
@@ -190,14 +193,34 @@ def _assert_no_overlap(
     Sanity check: val must start at or after train ends;
     test must start at or after val ends.
 
-    This guards against equal-valued TransactionDT boundary rows leaking
-    across partitions (not an issue with iloc slicing, but explicit is better).
+    Compares val.min() against train.MAX (not train.min) — the only way to
+    confirm there is no temporal overlap between adjacent partitions.
+
+    Raises
+    ------
+    ValueError
+        If any adjacent split pair has a temporal overlap.
     """
-    assert val[time_col].min() >= train[time_col].min(), \
-        "Overlap detected between train and val!"
-    assert test[time_col].min() >= val[time_col].min(), \
-        "Overlap detected between val and test!"
-    logger.info("Overlap assertion passed — splits are strictly ordered.")
+    train_max = train[time_col].max()
+    val_min   = val[time_col].min()
+    val_max   = val[time_col].max()
+    test_min  = test[time_col].min()
+
+    if val_min < train_max:
+        raise ValueError(
+            f"Temporal overlap between train and val: "
+            f"val starts at {val_min} but train ends at {train_max}."
+        )
+    if test_min < val_max:
+        raise ValueError(
+            f"Temporal overlap between val and test: "
+            f"test starts at {test_min} but val ends at {val_max}."
+        )
+    logger.info(
+        "Overlap check passed — train ends at %d, val starts at %d, "
+        "val ends at %d, test starts at %d.",
+        train_max, val_min, val_max, test_min,
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -133,7 +133,7 @@ def _rolling_entity_window(
     # Categorical columns (produced by loader.reduce_mem_usage) require the
     # new category to be registered BEFORE fillna — otherwise pandas raises
     # TypeError: "Cannot setitem on a Categorical with a new category".
-    if pd.api.types.is_categorical_dtype(work[entity_col]):
+    if isinstance(work[entity_col].dtype, pd.CategoricalDtype):
         if "__UNKNOWN__" not in work[entity_col].cat.categories:
             work[entity_col] = work[entity_col].cat.add_categories("__UNKNOWN__")
     work[entity_col] = work[entity_col].fillna("__UNKNOWN__")
